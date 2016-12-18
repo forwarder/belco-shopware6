@@ -3,52 +3,19 @@
   
   public static $repository = null;
 
-  public function getVersion() {
-    return '0.0.1';
-  }
-
-  public function getLabel() {
-    return 'Belco';
-  }
-
-  public function getInfo() {
-    return array(
-      'version' => $this->getVersion(),
-      'author' => 'Forwarder B.V.',
-      'source' => $this->getSource(),
-      'supplier' => 'Forwarder B.V.',
-      'support' => 'help@belco.io',
-      'link' => 'https://www.belco.io',
-      'copyright' => 'Copyright (c) 2016, Forwarder B.V.',
-      'label' => $this->getLabel(),
-      'description' => '<h2>Sales & Support tool for e-commerce</h2>'
-    );
-  }
-
   public function install() {
     $this->subscribeEvent(
       'Enlight_Controller_Action_PostDispatchSecure_Frontend',
       'onFrontendPostDispatch'
     );
 
-    // $this->subscribeEvent(
-    //   'Shopware_Modules_Admin_SaveRegister_Successful',
-    //   'onSaveRegisterSuccessful'
-    // );
-
-    // $this->subscribeEvent(
-    //   'Enlight_Controller_Action_PostDispatch_Frontend_Account',
-    //   'onFrontendAccountPostDispatch'
-    // );
-
-    // $this->subscribeEvent(
-    //   'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
-    //   'onCheckoutConfirm'
-    // );
-
     $this->createConfig();
 
     return true;
+  }
+
+  private function getCurrency() {
+    return $this->get('currency')->getShortName();
   }
 
   public function onFrontendPostDispatch(Enlight_Event_EventArgs $args) {
@@ -63,21 +30,6 @@
     $view->assign('belcoConfig', $this->getWidgetConfig());
   }
 
-  // public function onSaveRegisterSuccessful(Enlight_Event_EventArgs $args) {
-  //   /** @var \Enlight_Controller_Action $controller */
-  //   error_log($args);
-  // }
-
-  // public function onFrontendAccountPostDispatch(Enlight_Event_EventArgs $args) {
-  //   /** @var \Enlight_Controller_Action $controller */
-  //   error_log($args);
-  // }
-
-  // public function onCheckoutConfirm(Enlight_Event_EventArgs $args) {
-  //   /** @var \Enlight_Controller_Action $controller */
-  //   error_log($args);
-  // }
-
   public function getCart() {
     $cart = Shopware()->System()->sMODULES['sBasket']->sGetBasketData();
 
@@ -86,15 +38,16 @@
     }
 
     return array(
-      'total' => $cart['AmountNumeric'],
-      'subtotal' => $cart['AmountNetNumeric'],
+      'total' => (float) $cart['AmountNumeric'],
+      'subtotal' => (float) $cart['AmountNetNumeric'],
+      'currency' => $this->getCurrency(),
       'items' => array_map(function($item) {
         return array(
           'id' => $item['articleID'],
           'name' => $item['articlename'],
-          'price' => $item['priceNumeric'],
+          'price' => (float) $item['priceNumeric'],
           'url' => $item['linkDetails'],
-          'quantity' => $item['quantity']
+          'quantity' => (int) $item['quantity']
         );
       }, $cart['content'])
     );
@@ -120,11 +73,6 @@
       if ($data['billingaddress']['phone']) {
         $customer['phoneNumber'] = $data['billing']['phone'];
       }
-
-      // @TODO add more data
-      // - Last order
-      // - Customer value
-      // - Total orders
     }
 
     return $customer;
@@ -145,7 +93,9 @@
     $customer = $this->getCustomer();
 
     if ($customer) {
-      $config = array_merge($config, $customer);
+      $order = $this->getOrderData($customer['id']);
+
+      $config = array_merge($config, $customer, $order);
     }
 
     return json_encode($config);
@@ -159,5 +109,32 @@
     $this->Form()->setElement('text', 'apiKey', array(
       'label' => 'Api Key'
     ));
+  }
+
+  private function getOrderData($customerId) {
+    $builder = Shopware()->Models()->createQueryBuilder();
+
+    $builder->select(array(
+      'SUM(orders.invoiceAmount) as totalSpent',
+      'MAX(orders.orderTime) as lastOrder',
+      'COUNT(orders.id) as orderCount',
+    ));
+
+    $builder
+      ->from('Shopware\Models\Order\Order', 'orders')
+      ->groupBy('orders.customerId')
+      ->where($builder->expr()->eq('orders.customerId', $customerId))
+      ->andWhere($builder->expr()->notIn('orders.status', array('-1', '4')))
+      ->addOrderBy('orders.orderTime', 'ASC');
+
+    $result = $builder->getQuery()->getOneOrNullResult();
+
+    if ($result) {
+      return array(
+        'totalSpent' => (float) $result['totalSpent'],
+        'lastOrder' => strtotime($result['lastOrder']),
+        'orderCount' => (int) $result['orderCount']
+      );
+    }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "label": {
+    "de": "Belco",
+    "en": "Belco"
+  },
+  "author": "Forwarder B.V.",
+  "currentVersion": "0.0.1",
+  "support": "help@belco.io",
+  "link": "https://www.belco.io",
+  "copyright": "Copyright (c) Forwarder B.V.",
+  "description": "<h2>Sales & Support tool for e-commerce</h2>",
+  "compatibility": {
+    "minimumVersion": "5.2.0",
+    "maximumVersion": null,
+    "blacklist": [
+    ]
+  }
+}
