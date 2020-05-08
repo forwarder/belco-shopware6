@@ -51,9 +51,10 @@ class BelcoSubscriber implements SubscriberInterface{
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
 
-        $view->assign('Apikey', $this->config['Apikey']);
-        $view->assign('Apisecret', $this->config['Apisecret']);
+        $view->assign('shopId', $this->config['shopId']);
+        $view->assign('apiKey', $this->config['apiKey']);
 
+        $view->assign('belcoConfig', $this->belcoConnector->getWidgetConfig());
         /*if (!$this->config['swagSloganContent']) {
             $view->assign('swagSloganContent', $this->sloganPrinter->getSlogan());
         }*/

@@ -11,7 +11,7 @@ class BelcoConnector {
     }
     
     private function getCurrency() {
-        return $this->get('currency')->getShortName();
+        return $currency;
     }
 
     public function onFrontendPostDispatch(Enlight_Event_EventArgs $args) {
@@ -75,7 +75,11 @@ class BelcoConnector {
     }
 
     public function getWidgetConfig() {
-        $shopId = $this->Config()->get('shopId');
+        $shopId = 'G4ag3eGyiKibrGcM7';
+        
+        /* $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('belcoConnector'); */
+        
+        /*$shopId = $this->Config()->get('shopId');*/
 
         if (!$shopId) {
             return;

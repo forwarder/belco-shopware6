@@ -3,7 +3,9 @@
 {block name="frontend_index_header_javascript"}
     {$smarty.block.parent}
     
-    {if $belcoConfig.shopId}
+    {$belcoConfig}
+
+    {if $shopId}
         <script>window.belcoConfig = {$belcoConfig};</script>
     {/if}
 
