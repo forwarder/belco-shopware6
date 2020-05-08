@@ -45,16 +45,40 @@ class BelcoSubscriber implements SubscriberInterface{
 
     public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
+        
+        $shop = $this->container->get('shop');
+
+        if (!$shop) {
+            $shop = $this->container->get('models')->getRepository(\Shopware\Models\Shop\Shop::class)->getActiveDefault();
+        }
+        
+        $belcoBackendData = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('PluginName', $shop);
+        
+        /*if ($belcoBackendData['shopId']) {
+            return;
+        }*/
+        
+        $shopId = $belcoBackendData['shopId'];
+        $apiKey = $belcoBackendData['apiKey'];
+        /*$shopId = 'G4ag3eGyiKibrGcM7';*/
+        
+        /* $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('belcoConnector'); */
+        
+        /*$shopId = $this->Config()->get('shopId');*/
+
+
+
         /** @var \Enlight_Controller_Action $controller */
         $controller = $args->get('subject');
         $view = $controller->View();
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
 
-        $view->assign('shopId', $this->config['shopId']);
-        $view->assign('apiKey', $this->config['apiKey']);
+        /* kan waarschijnlijk weg want hoeft niet in smarty block */
+        $view->assign('shopId', $this->belcoBackendData['shopId']);
+        $view->assign('apiKey', $this->belcoBackendData['apiKey']);
 
-        $view->assign('belcoConfig', $this->belcoConnector->getWidgetConfig());
+        /*$view->assign('belcoConfig', $this->belcoConnector->getWidgetConfig());*/
         /*if (!$this->config['swagSloganContent']) {
             $view->assign('swagSloganContent', $this->sloganPrinter->getSlogan());
         }*/

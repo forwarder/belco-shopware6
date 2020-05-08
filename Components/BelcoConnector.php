@@ -75,11 +75,6 @@ class BelcoConnector {
     }
 
     public function getWidgetConfig() {
-        $shopId = 'G4ag3eGyiKibrGcM7';
-        
-        /* $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('belcoConnector'); */
-        
-        /*$shopId = $this->Config()->get('shopId');*/
 
         if (!$shopId) {
             return;
