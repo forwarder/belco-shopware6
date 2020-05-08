@@ -9,7 +9,7 @@ class BelcoConnector {
 
         return true;
     }
-
+    
     private function getCurrency() {
         return $this->get('currency')->getShortName();
     }
