@@ -17,7 +17,7 @@ class BelcoConnector {
     public function onFrontendPostDispatch(Enlight_Event_EventArgs $args) {
         /** @var \Enlight_Controller_Action $controller */ 
         $controller = $args->get('subject');
-        $view = $controller->View();
+        $view = $controll er->View();
 
         $view->addTemplateDir(
             __DIR__ . '/Views'
@@ -75,11 +75,12 @@ class BelcoConnector {
     }
 
     public function getWidgetConfig() {
-
+        $shopid = $this->configReader['shopId'];
+        
         if (!$shopId) {
             return;
         }
-
+        
         $config = array(
             'shopId' => $shopId,
             'cart' => $this->getCart()
@@ -95,7 +96,7 @@ class BelcoConnector {
 
         return json_encode($config);
     }
-
+    /*
     private function createConfig() {
         $this->Form()->setElement('text', 'shopId', array(
             'label' => 'Shop Id'
@@ -104,7 +105,7 @@ class BelcoConnector {
         $this->Form()->setElement('text', 'apiKey', array(
             'label' => 'Api Key'
         ));
-    }
+    }*/
 
     private function getOrderData($customerId) {
         $builder = Shopware()->Models()->createQueryBuilder();

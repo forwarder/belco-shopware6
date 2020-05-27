@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/config.xsd">
     <elements>
-        <element required="true" type="text" scope="locale">
+        <element required="true" type="text" scope="shop">
             <name>shopId</name>
             <label lang="nl">Shop ID</label>
             <label lang="en">Shop ID</label>
@@ -10,7 +10,7 @@
             <description lang="nl">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
             <description lang="en">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
         </element>
-        <element required="true" type="text" scope="locale">
+        <element required="true" type="text" scope="shop">
             <name>apiKey</name>
             <label lang="nl">api key</label>
             <label lang="en">api key</label>

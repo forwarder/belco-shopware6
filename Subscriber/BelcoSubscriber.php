@@ -12,6 +12,7 @@ class BelcoSubscriber implements SubscriberInterface{
     private $belcoConnector;
     private $pluginDirectory;
     private $config;
+    public $configReader;
     
     public function activate(ActivateContext $context) { //Belco::activate() must be an instance of Belco\\ActivateContext, instance of Shopware\\Components\\Plugin\\Context\\ActivateContext
         $context->scheduleClearCache(InstallContext::CACHE_LIST_DEFAULT);
@@ -40,30 +41,37 @@ class BelcoSubscriber implements SubscriberInterface{
         $this->pluginDirectory = $pluginDirectory;
         $this->belcoConnector = $belcoConnector;
 
-        $this->config = $configReader->getByPluginName($pluginName);
+        $this->configReader = $configReader->getByPluginName($pluginName);
+        
     }
 
     public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
         
+        
+        /*
         $shop = $this->container->get('shop');
-
+        
         if (!$shop) {
             $shop = $this->container->get('models')->getRepository(\Shopware\Models\Shop\Shop::class)->getActiveDefault();
         }
-        
+        */
+        /*
         $belcoBackendData = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('PluginName', $shop);
-        
+        */
         /*if ($belcoBackendData['shopId']) {
             return;
         }*/
         
-        $shopId = $belcoBackendData['shopId'];
-        $apiKey = $belcoBackendData['apiKey'];
+        $shopId = $this->config['shopId'];
+        $apiKey = $this->config['apiKey'];
         /*$shopId = 'G4ag3eGyiKibrGcM7';*/
         
-        /* $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('belcoConnector'); */
-        
+        error_log($shopId, "shopid");
+        error_log($apiKey, "apikey");
+
+        //deze is emptyyyyyyy
+        /*$configReader = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('BelcoConnectorPlugin', $shop);*/
         /*$shopId = $this->Config()->get('shopId');*/
 
 
@@ -72,11 +80,12 @@ class BelcoSubscriber implements SubscriberInterface{
         $controller = $args->get('subject');
         $view = $controller->View();
 
-        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
+        
 
-        /* kan waarschijnlijk weg want hoeft niet in smarty block */
-        $view->assign('shopId', $this->belcoBackendData['shopId']);
-        $view->assign('apiKey', $this->belcoBackendData['apiKey']);
+        $view->assign('shopId', $shopId);
+        $view->assign('apiKey', $apiKey);
+
+        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
 
         /*$view->assign('belcoConfig', $this->belcoConnector->getWidgetConfig());*/
         /*if (!$this->config['swagSloganContent']) {
