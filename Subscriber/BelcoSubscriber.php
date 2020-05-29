@@ -46,7 +46,6 @@ class BelcoSubscriber implements SubscriberInterface{
 
     public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
-        $this->configReader = $configReader->getByPluginName('BelcoConnectorPlugin');
 
         $shopId = $this->configReader['shopId'];
         $apiKey = $this->configReader['apiKey'];
