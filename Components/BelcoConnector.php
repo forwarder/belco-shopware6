@@ -3,6 +3,7 @@
 namespace BelcoConnectorPlugin\Components;
 
 class BelcoConnector {
+
     public function install() {
 
         $this->createConfig();
@@ -17,7 +18,7 @@ class BelcoConnector {
     public function onFrontendPostDispatch(Enlight_Event_EventArgs $args) {
         /** @var \Enlight_Controller_Action $controller */ 
         $controller = $args->get('subject');
-        $view = $controll er->View();
+        $view = $controller->View();
 
         $view->addTemplateDir(
             __DIR__ . '/Views'
@@ -75,7 +76,9 @@ class BelcoConnector {
     }
 
     public function getWidgetConfig() {
-        $shopid = $this->configReader['shopId'];
+        $configReader = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('BelcoConnectorPlugin', $shop);
+
+        $shopId = $this->configReader['shopId'];
         
         if (!$shopId) {
             return;

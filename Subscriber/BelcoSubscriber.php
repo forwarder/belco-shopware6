@@ -41,14 +41,32 @@ class BelcoSubscriber implements SubscriberInterface{
         $this->pluginDirectory = $pluginDirectory;
         $this->belcoConnector = $belcoConnector;
 
-        $this->configReader = $configReader->getByPluginName($pluginName);
-        
+        $this->configReader = $configReader->getByPluginName('BelcoConnectorPlugin');
     }
 
     public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
+        $this->configReader = $configReader->getByPluginName('BelcoConnectorPlugin');
+
+        $shopId = $this->configReader['shopId'];
+        $apiKey = $this->configReader['apiKey'];
+
+        $view->assign('shopId', $shopId);
+        $view->assign('apiKey', $apiKey);
+        /*$shopId = 'G4ag3eGyiKibrGcM7';*/
         
-        
+        error_log($shopId, "shopid");
+        error_log($apiKey, "apikey");
+
+        //deze is emptyyyyyyy
+        /*$configReader = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('BelcoConnectorPlugin', $shop);*/
+        /*$shopId = $this->Config()->get('shopId');*/
+
+        /** @var \Enlight_Controller_Action $controller */
+        $controller = $args->get('subject');
+        $view = $controller->View();
+
+        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
         /*
         $shop = $this->container->get('shop');
         
@@ -63,29 +81,7 @@ class BelcoSubscriber implements SubscriberInterface{
             return;
         }*/
         
-        $shopId = $this->config['shopId'];
-        $apiKey = $this->config['apiKey'];
-        /*$shopId = 'G4ag3eGyiKibrGcM7';*/
         
-        error_log($shopId, "shopid");
-        error_log($apiKey, "apikey");
-
-        //deze is emptyyyyyyy
-        /*$configReader = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('BelcoConnectorPlugin', $shop);*/
-        /*$shopId = $this->Config()->get('shopId');*/
-
-
-
-        /** @var \Enlight_Controller_Action $controller */
-        $controller = $args->get('subject');
-        $view = $controller->View();
-
-        
-
-        $view->assign('shopId', $shopId);
-        $view->assign('apiKey', $apiKey);
-
-        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
 
         /*$view->assign('belcoConfig', $this->belcoConnector->getWidgetConfig());*/
         /*if (!$this->config['swagSloganContent']) {
