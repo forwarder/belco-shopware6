@@ -25,7 +25,13 @@ class BelcoConnector {
         );
 
         $view->assign('belcoConfig', $this->getWidgetConfig());
-    }
+
+        ob_start();                    // start buffer capture
+        var_dump( $object );           // dump the values
+        $contents = ob_get_contents(); // put the buffer into a variable
+        ob_end_clean();                // end capture
+        error_log( $contents );
+        }
 
     public function getCart() {
         $cart = Shopware()->System()->sMODULES['sBasket']->sGetBasketData();
