@@ -25,12 +25,6 @@ class BelcoConnector {
         );
 
         $view->assign('belcoConfig', $this->getWidgetConfig());
-
-        ob_start();                    // start buffer capture
-        var_dump( $object );           // dump the values
-        $contents = ob_get_contents(); // put the buffer into a variable
-        ob_end_clean();                // end capture
-        error_log( $contents );
         }
 
     public function getCart() {
@@ -86,9 +80,11 @@ class BelcoConnector {
 
         $shopId = $this->configReader['shopId'];
         
+        /*
         if (!$shopId) {
             return;
         }
+        */
         
         $config = array(
             'shopId' => $shopId,
@@ -100,10 +96,15 @@ class BelcoConnector {
         if ($customer) {
         $order = $this->getOrderData($customer['id']);
 
-        $config = array_merge($config, $customer, $order);
+        $belcoConfig = array_merge($config, $customer, $order);
         }
 
-        return json_encode($config);
+        return json_encode($belcoConfig);
+        /*
+        $view = $controller->View();
+
+        $view->assign('belcoConfig', $belcoConfig);
+        */
     }
     /*
     private function createConfig() {
