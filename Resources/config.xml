@@ -6,15 +6,15 @@
             <name>shopId</name>
             <label lang="nl">Shop ID</label>
             <label lang="en">Shop ID</label>
-            <value>Belco shop ID</value>
+            <value></value>
             <description lang="nl">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
             <description lang="en">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
         </element>
         <element required="true" type="text" scope="shop">
-            <name>apiKey</name>
-            <label lang="nl">api key</label>
-            <label lang="en">api key</label>
-            <value>Belco api key</value>
+            <name>apiSecret</name>
+            <label lang="nl">Api Secret</label>
+            <label lang="en">Api Secret</label>
+            <value></value>
             <description lang="nl">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
             <description lang="en">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
         </element>

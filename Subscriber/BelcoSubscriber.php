@@ -45,17 +45,9 @@ class BelcoSubscriber implements SubscriberInterface{
     }
 
     public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args)
-    {
-
-        $shopId = $this->configReader['shopId'];
-        $apiKey = $this->configReader['apiKey'];
-
-        $view->assign('shopId', $shopId);
-        $view->assign('apiKey', $apiKey);
-        /*$shopId = 'G4ag3eGyiKibrGcM7';*/
-        
+    { 
         error_log($shopId, "shopid");
-        error_log($apiKey, "apikey");
+        error_log($apiSecret, "apisecret");
 
         //deze is emptyyyyyyy
         /*$configReader = $this->container->get('shopware.plugin.cached_config_reader')->getByPluginName('BelcoConnectorPlugin', $shop);*/
@@ -64,6 +56,13 @@ class BelcoSubscriber implements SubscriberInterface{
         /** @var \Enlight_Controller_Action $controller */
         $controller = $args->get('subject');
         $view = $controller->View();
+
+        $shopId = $this->configReader['shopId'];
+        $apiSecret = $this->configReader['apiSecret'];
+
+        $view->assign('shopId', $shopId);
+        $view->assign('apiKey', $apiSecret);
+        /*$shopId = 'G4ag3eGyiKibrGcM7';*/
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
         /*
