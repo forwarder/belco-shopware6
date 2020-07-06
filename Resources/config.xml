@@ -4,19 +4,19 @@
     <elements>
         <element required="true" type="text" scope="shop">
             <name>shopId</name>
-            <label lang="nl">Shop ID</label>
-            <label lang="en">Shop ID</label>
+            <label lang="nl">Shop Id</label>
+            <label lang="en">Shop Id</label>
             <value></value>
-            <description lang="nl">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
-            <description lang="en">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
+            <description lang="nl">Je kunt je Shop Id en Secret terug vinden in Belco > instellingen > api keys.</description>
+            <description lang="en">You can find your Shop Id and Secret in Belco > settings > api keys.</description>
         </element>
         <element required="true" type="text" scope="shop">
             <name>apiSecret</name>
             <label lang="nl">Api Secret</label>
             <label lang="en">Api Secret</label>
             <value></value>
-            <description lang="nl">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
-            <description lang="en">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.</description>
+            <description lang="nl"></description>
+            <description lang="en"></description>
         </element>
     </elements>
 </config>
