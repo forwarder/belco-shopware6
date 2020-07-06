@@ -4,13 +4,13 @@
     "en": "Belco"
   },
   "author": "Forwarder B.V.",
-  "currentVersion": "0.0.1",
+  "currentVersion": "3.0.0",
   "support": "help@belco.io",
   "link": "https://www.belco.io",
-  "copyright": "Copyright (c) Forwarder B.V.",
+  "copyright": "Copyright (c) Belco B.V.",
   "description": "<h2>Sales & Support tool for e-commerce</h2>",
   "compatibility": {
-    "minimumVersion": "5.2.0",
+    "minimumVersion": "5.6.0",
     "maximumVersion": null,
     "blacklist": [
     ]

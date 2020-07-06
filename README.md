@@ -1,7 +1,7 @@
 Belco-Shopware
 ==================
 
-Belco plugin for Shopware Community Edition Version 5.2
+Belco plugin for Shopware Community Edition Version 5.6
 
 ## Installation from this git repository
 

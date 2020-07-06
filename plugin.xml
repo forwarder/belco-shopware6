@@ -4,12 +4,16 @@
         <label lang="nl">Belco voor Shopware</label>
         <label lang="en">Belco for Shopware</label>
 
-        <version>2.0.0</version>
+        <version>3.0.0</version>
         <copyright>(c) By Belco B.V.</copyright>
         <license>MIT</license>
         <link>https://belco.io</link>
         <author>Belco B.V.</author>
-        <compatibility minVersion="5.3.0"/>
+        <compatibility minVersion="5.6.0"/>
+
+        <changelog version="3.0.0">
+            <changes lang="nl">Update voor 5.6.0 uitgevoegd</changes>
+        </changelog>
 
         <changelog version="2.0.0">
             <changes lang="nl">Update voor 5.3.0 uitgevoegd</changes>
