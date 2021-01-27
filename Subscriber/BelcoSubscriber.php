@@ -1,70 +1,100 @@
-<?php 
+<?php
 
-namespace BelcoConnectorPlugin\Subscriber;
+namespace BelcoShopware\Subscriber;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Enlight\Event\SubscriberInterface;
-use Shopware\Components\Context\ActivateContext;
-use Shopware\Components\Context\UninstallContext;
+use Enlight_Controller_ActionEventArgs;
+use Enlight_Exception;
+use Shopware\Bundle\CookieBundle\CookieCollection;
+use Shopware\Bundle\CookieBundle\Structs\CookieGroupStruct;
+use Shopware\Bundle\CookieBundle\Structs\CookieStruct;
 use Shopware\Components\Plugin\ConfigReader;
-use BelcoConnectorPlugin\Components\BelcoConnector;
+use Shopware\Components\Plugin\Context\ActivateContext;
+use Shopware\Components\Plugin\Context\InstallContext;
+use Shopware\Components\Plugin\Context\UninstallContext;
 
-class BelcoSubscriber implements SubscriberInterface{
-    private $belcoConnector;
+/**
+ * Class BelcoSubscriber
+ * @package BelcoShopware\Subscriber
+ */
+class BelcoSubscriber implements SubscriberInterface
+{
     private $pluginDirectory;
     private $config;
-    
-    public function activate(ActivateContext $context) { //Belco::activate() must be an instance of Belco\\ActivateContext, instance of Shopware\\Components\\Plugin\\Context\\ActivateContext
+
+    public function activate(ActivateContext $context) {
         $context->scheduleClearCache(InstallContext::CACHE_LIST_DEFAULT);
     }
 
-    public function uninstall(UninstallContext $context) {
+    public function uninstall(UninstallContext $context)
+    {
         if ($context->keepUserData()) {
-            return;
+            return; //NOSONAR
         }
     }
 
     public static $repository = null;
 
-    public static function getSubscribedEvents() {
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
+    {
         return [
-            'Enlight_Controller_Action_PostDispatchSecure_Frontend' => 'onPostDispatch'
+            'Enlight_Controller_Action_PostDispatchSecure_Frontend' => 'onPostDispatch',
+            'CookieCollector_Collect_Cookies' => 'addBelcoCookie'
         ];
     }
 
-    public function __construct($pluginName, $pluginDirectory, BelcoConnector $belcoConnector, ConfigReader $configReader)
+    /**
+     * BelcoSubscriber constructor.
+     * @param $pluginName
+     * @param $pluginDirectory
+     * @param ConfigReader $configReader
+     */
+    public function __construct($pluginDirectory, ConfigReader $configReader)
     {
         $this->pluginDirectory = $pluginDirectory;
-        $this->belcoConnector = $belcoConnector;
 
-        $this->config = $configReader->getByPluginName('BelcoConnectorPlugin');
+        $this->config = $configReader->getByPluginName('BelcoShopware');
     }
 
-    public function getCart() {
-        $cart = Shopware()->System()->sMODULES['sBasket']->sGetBasketData();
-
+    /**
+     * Get the Cart of Shopware
+     * @return array|null The {@link \sBasket} data. represented as the cart.
+     * @throws Enlight_Exception
+     */
+    public function getCart(): ?array
+    {
+        $cart = Shopware()->Modules()->Basket()->sGetBasketData();
         if (empty($cart['content'])) {
             return null;
         }
 
         return array(
-            'total' => (float) $cart['AmountNumeric'],
-            'subtotal' => (float) $cart['AmountNetNumeric'],
+            'total' => (float)$cart['AmountNumeric'],
+            'subtotal' => (float)$cart['AmountNetNumeric'],
             'currency' => $this->getCurrency(),
-            'items' => array_map(function($item) {
+            'items' => array_map(function ($item) {
                 return array(
                     'id' => $item['articleID'],
                     'name' => $item['articlename'],
-                    'price' => (float) $item['priceNumeric'],
+                    'price' => (float)$item['priceNumeric'],
                     'url' => $item['linkDetails'],
-                    'quantity' => (int) $item['quantity']
+                    'quantity' => (int)$item['quantity']
                 );
             }, $cart['content'])
         );
+
     }
 
-    public function getCustomer() {
-        $data = Shopware()->System()->sMODULES['sAdmin']->sGetUserData();
-
+    /**
+     * @return array Returns a Array with the User information
+     */
+    public function getCustomer():array
+    {
+        $data = Shopware()->Modules()->Admin()->sGetUserData();
         $customer = array();
 
         if (!empty($data['additional']['user'])) {
@@ -87,7 +117,13 @@ class BelcoSubscriber implements SubscriberInterface{
         return $customer;
     }
 
-    private function getOrderData($customerId) {
+    /**
+     * @param $customerId
+     * @return array
+     * @throws NonUniqueResultException
+     */
+    private function getOrderData($customerId): ?array
+    {
         $builder = Shopware()->Models()->createQueryBuilder();
 
         $builder->select(array(
@@ -107,15 +143,22 @@ class BelcoSubscriber implements SubscriberInterface{
 
         if ($result) {
             return array(
-                'totalSpent' => (float) $result['totalSpent'],
+                'totalSpent' => (float)$result['totalSpent'],
                 'lastOrder' => strtotime($result['lastOrder']),
-                'orderCount' => (int) $result['orderCount']
+                'orderCount' => (int)$result['orderCount']
             );
         }
+        return null;
     }
 
-    public function getWidgetConfig() {
-        $customer = $this->getCustomer(); 
+    /**
+     * @return false|string
+     * @throws NonUniqueResultException
+     * @throws Enlight_Exception
+     */
+    public function getWidgetConfig()
+    {
+        $customer = $this->getCustomer();
 
         $belcoConfig = array(
             'shopId' => $this->config['shopId'],
@@ -123,10 +166,11 @@ class BelcoSubscriber implements SubscriberInterface{
         );
 
         if ($customer) {
+            $belcoConfig = array_merge($belcoConfig, $customer);
             $order = $this->getOrderData($customer['id']);
-
-            $belcoConfig = array_merge($config, $customer, $order);
-
+            if ($order) {
+                $belcoConfig = array_merge($belcoConfig, $order);
+            }
             if ($this->config['apiSecret']) {
                 $belcoConfig['hash'] = hash_hmac('sha256', $customer['id'], $this->config['apiSecret']);
             }
@@ -135,7 +179,14 @@ class BelcoSubscriber implements SubscriberInterface{
         return json_encode($belcoConfig);
     }
 
-    public function onPostDispatch(\Enlight_Controller_ActionEventArgs $args) { 
+
+    /**
+     * @param Enlight_Controller_ActionEventArgs $args
+     * @throws NonUniqueResultException
+     * @throws Enlight_Exception
+     */
+    public function onPostDispatch(Enlight_Controller_ActionEventArgs $args)
+    {
         $controller = $args->get('subject');
         $view = $controller->View();
 
@@ -148,11 +199,34 @@ class BelcoSubscriber implements SubscriberInterface{
         $belcoConfig = $this->getWidgetConfig();
 
         $view->assign('belcoConfig', $belcoConfig);
+        $view->assign('shopId', $shopId);
 
         $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
     }
 
-    private function getCurrency() {
-        return $this->get('currency')->getShortName();
+    /**
+     * Shopware needs to register the belco cookies.
+     * Here we determine the belco cookies to be saved on the technical level of the cookies.
+     * @return CookieCollection
+     */
+    public function addBelcoCookie(): CookieCollection
+    {
+        $collection = new CookieCollection();
+        $collection->add(new CookieStruct(
+            'belco',
+            '/(^belco-\w+-\w+)|(^belco-\w+)/',
+            'Chat session',
+            CookieGroupStruct::TECHNICAL
+        ));
+        return $collection;
+    }
+
+    /**
+     * Returns the currency used for the Shop.
+     * @return string Currency in the shortName form. Like EUR, USD etc.
+     */
+    private function getCurrency(): string
+    {
+        return Shopware()->Shop()->getCurrency()->getCurrency();
     }
 }

@@ -5,16 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="belco_connector_plugin.belco_subscriber" class="BelcoConnectorPlugin\Subscriber\BelcoSubscriber">
-            <argument>%belco_connector_plugin.plugin_name%</argument>
-            <argument>%belco_connector_plugin.plugin_dir%</argument>
-
-            <argument type="service" id="belco_connector_plugin.belco_connector" />
+        <service id="belco_shopware.subscriber.belco_subscriber" class="BelcoShopware\Subscriber\BelcoSubscriber">
+            <argument>%belco_shopware.plugin_dir%</argument>
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-
             <tag name="shopware.event_subscriber" />
         </service>
-
-        <service id="belco_connector_plugin.belco_connector" class="BelcoConnectorPlugin\Components\BelcoConnector" />
     </services>
 </container>
