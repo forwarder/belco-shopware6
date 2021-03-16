@@ -31,21 +31,5 @@
             <label lang="nl-NL">Domein Naam</label>
             <placeholder>https://www.example.com</placeholder>
         </input-field>
-<!--        <element required="true" type="text" scope="shop">-->
-<!--            <name>shopId</name>-->
-<!--            <label lang="nl">Shop Id</label>-->
-<!--            <label lang="en">Shop Id</label>-->
-<!--            <value></value>-->
-<!--            <description lang="nl"></description>-->
-<!--            <description lang="en"></description>-->
-<!--        </element>-->
-<!--        <element required="true" type="text" scope="shop">-->
-<!--            <name>apiSecret</name>-->
-<!--            <label lang="nl">Api Secret</label>-->
-<!--            <label lang="en">Api Secret</label>-->
-<!--            <value></value>-->
-<!--            <description lang="nl"></description>-->
-<!--            <description lang="en"></description>-->
-<!--        </element>-->
     </card>
 </config>

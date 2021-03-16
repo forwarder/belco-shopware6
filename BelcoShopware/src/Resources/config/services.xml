@@ -5,11 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-<!--        <service id="belco_shopware.subscriber.belco_subscriber" class="Belco\BelcoShopware\Subscriber\BelcoSubscriber">-->
-<!--            <argument>%belco_shopware.plugin_dir%</argument>-->
-<!--            <argument type="service" id="shopware.plugin.cached_config_reader" />-->
-<!--            <tag name="kernel.event_subscriber" />-->
-<!--        </service>-->
         <service id="BelcoShopware\Storefront\Subscriber\BelcoSubscriber">
             <argument id="Shopware\Core\System\SystemConfig\SystemConfigService" type="service"/>
             <argument id="Shopware\Core\Checkout\Cart\SalesChannel\CartService" type="service"/>
