@@ -174,7 +174,7 @@ class BelcoSubscriber implements EventSubscriberInterface
         );
         $result = $this->repository->search($criteria, $context);
 
-        if ($result) {
+        if ($result->getAggregations()) {
             $aggregations = $result->getAggregations();
             return array(
                 'totalSpent' => (float)$aggregations->get('totalSpent')->getVars()['sum'],
