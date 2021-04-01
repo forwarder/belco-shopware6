@@ -1,7 +1,7 @@
 {
   "name": "belco-shopware/belco-shopware",
   "description": "Belco voor Shopware",
-  "version": "v4.0.0",
+  "version": "v4.0.1",
   "type": "shopware-platform-plugin",
   "license": "MIT",
   "authors": [

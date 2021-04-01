@@ -104,7 +104,7 @@ class BelcoSubscriber implements EventSubscriberInterface
         if ($cart->getLineItems()->count() == 0) {
             return null;
         }
-        $items=[];
+        $items = [];
         foreach ($cart->getLineItems()->getElements() as $item) {
             //ID is a Hexadecimal value, but needs to be a decimal. So we use hexdec php functionality to make it an number
             //So the Belco backend can get this value.
@@ -123,6 +123,7 @@ class BelcoSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @param SalesChannelContext $context
      * @return array Returns a Array with the User information
      */
     public function getCustomer(SalesChannelContext $context): array
@@ -174,11 +175,17 @@ class BelcoSubscriber implements EventSubscriberInterface
         );
         $result = $this->repository->search($criteria, $context);
 
-        if ($result->getAggregations()) {
+        if ($result != null && $result->getAggregations() != null) {
             $aggregations = $result->getAggregations();
+            $lastOrder = null;
+
+            if ($aggregations->get('lastOrder')->getVars()['max'] != null) {
+                $lastOrder = strtotime($aggregations->get('lastOrder')->getVars()['max']);
+            }
+
             return array(
                 'totalSpent' => (float)$aggregations->get('totalSpent')->getVars()['sum'],
-                'lastOrder' => strtotime($aggregations->get('lastOrder')->getVars()['max']),
+                'lastOrder' => $lastOrder,
                 'orderCount' => (int)$aggregations->get('orderCount')->getVars()['count']
             );
         }
@@ -202,7 +209,7 @@ class BelcoSubscriber implements EventSubscriberInterface
         if ($customer) {
             $belcoConfig = array_merge($belcoConfig, $customer);
             $order = $this->getOrderData($context, $customer['id']);
-            if ($order) {
+            if ($order != null) {
                 $belcoConfig = array_merge($belcoConfig, $order);
             }
             if ($this->getConfig()['apiSecret']) {
