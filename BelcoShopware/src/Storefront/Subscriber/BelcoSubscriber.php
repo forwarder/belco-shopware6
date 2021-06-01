@@ -106,9 +106,9 @@ class BelcoSubscriber implements EventSubscriberInterface
         }
         $items = [];
         foreach ($cart->getLineItems()->getElements() as $item) {
-            //ID is a Hexadecimal value, but needs to be a decimal. So we use hexdec php functionality to make it an number
-            //So the Belco backend can get this value.
-            $items[] = array('id' => hexdec($item->getId()),
+            //ID is a Hexadecimal value, but needs to be a long. Since this ID isn't used (until now) it is changed to 0
+            $items[] = array(
+                'id'=>0,
                 'name' => $item->getLabel(),
                 'price' => (float)$item->getPrice()->getUnitPrice(),
                 'url' => $this->getProductUrl($context, $item),
@@ -240,7 +240,7 @@ class BelcoSubscriber implements EventSubscriberInterface
 
         $shopId = $this->getConfig()['shopId'];
 
-        if (!$this->getConfig()['shopId']) {
+        if (!$this->getConfig()['shopId']||!$this->getConfig()['apiSecret']||!$this->getConfig()['domainName']) {
             return;
         }
 
