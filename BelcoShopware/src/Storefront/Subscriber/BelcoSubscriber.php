@@ -7,7 +7,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\MaxAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
@@ -37,7 +37,7 @@ class BelcoSubscriber implements EventSubscriberInterface
     private $cartService;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $repository;
 
@@ -79,12 +79,12 @@ class BelcoSubscriber implements EventSubscriberInterface
      * @param SystemConfigService $systemConfigService
      * @param CartService $cartService
      * @param SeoUrlPlaceholderHandlerInterface $ceoUrl
-     * @param EntityRepositoryInterface $entityRepository
+     * @param EntityRepository $entityRepository
      */
     public function __construct(SystemConfigService $systemConfigService,
                                 CartService $cartService,
                                 SeoUrlPlaceholderHandlerInterface $ceoUrl,
-                                EntityRepositoryInterface $entityRepository
+                                EntityRepository $entityRepository
     )
     {
         $this->systemConfigService = $systemConfigService;
