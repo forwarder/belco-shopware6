@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>Belco Api Keys</title>
+        <title lang="en-GB">Belco Api Keys</title>
+        <title lang="nl-NL">Belco Api Keys</title>
+        <input-field type="text">
+            <name>shopId</name>
+            <label>Shop Id</label>
+            <required>true</required>
+            <label lang="en-GB">Shop Id</label>
+            <label lang="nl-NL">Shop Id</label>
+            <placeholder>Shop Id</placeholder>
+            <helpText lang="en-GB">You can find your Shop Id and Secret in Belco > settings > api keys.</helpText>
+            <helpText lang="nl-NL">Je kunt je Shop Id en Secret terug vinden in Belco > instellingen > api keys.</helpText>
+        </input-field>
+        <input-field>
+            <name>apiSecret</name>
+            <required>true</required>
+            <label>Api Secret</label>
+            <label lang="en-GB">Api Secret</label>
+            <label lang="nl-NL">Api Secret</label>
+            <placeholder>Api Secret</placeholder>
+        </input-field>
+        <input-field>
+            <name>domainName</name>
+            <required>true</required>
+            <label>Domain Name</label>
+            <label lang="en-GB">Domain Name</label>
+            <label lang="nl-NL">Domein Naam</label>
+            <placeholder>https://www.example.com</placeholder>
+        </input-field>
+    </card>
+</config>

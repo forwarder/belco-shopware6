@@ -1,0 +1,30 @@
+{
+  "name": "belco-shopware/belco-shopware",
+  "description": "Belco voor Shopware",
+  "version": "v4.0.2",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Belco B.V.",
+      "role": "Manufacturer",
+      "homepage": "https://www.belco.io",
+      "email": "help@belco.io"
+    }
+  ],
+  "require": {
+    "shopware/core": "*"
+  },
+  "extra": {
+    "shopware-plugin-class": "BelcoShopware\\BelcoShopware",
+    "label": {
+      "nl-NL": "Belco voor Shopware",
+      "en-GB": "Belco for Shopware"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "BelcoShopware\\": "src/"
+    }
+  }
+}
