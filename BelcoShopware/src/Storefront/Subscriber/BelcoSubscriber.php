@@ -107,19 +107,21 @@ class BelcoSubscriber implements EventSubscriberInterface
         $items = [];
         foreach ($cart->getLineItems()->getElements() as $item) {
             //ID is a Hexadecimal value, but needs to be a long. Since this ID isn't used (until now) it is changed to 0
-            $items[] = array(
+            $items[] = [
                 'id'=>0,
                 'name' => $item->getLabel(),
                 'price' => (float)$item->getPrice()->getUnitPrice(),
                 'url' => $this->getProductUrl($context, $item),
-                'quantity' => (int)$item->getQuantity());
+                'quantity' => (int)$item->getQuantity()
+            ];
         }
-        return array(
+
+        return [
             'total' => (float)$cart->getPrice()->getTotalPrice(),
             'subtotal' => (float)$cart->getPrice()->getNetPrice(),
             'currency' => $context->getCurrency()->getIsoCode(),
             'items' => $items,
-        );
+        ];
     }
 
     /**
@@ -131,16 +133,16 @@ class BelcoSubscriber implements EventSubscriberInterface
         $customer = array();
 
         if ($context->getCustomer() != null) {
-
             $user = $context->getCustomer();
-            $customer = array(
+
+            $customer = [
                 'id' => $user->getId(),
                 'firstName' => $user->getFirstName(),
                 'lastName' => $user->getLastName(),
                 'email' => $user->getEmail(),
                 'country' => $context->getCurrency()->getIsoCode(),
                 'signedUp' => ($user->getFirstLogin())
-            );
+            ];
 
             if ($context->getCustomer()->getDefaultBillingAddress()->getPhoneNumber() != null) {
                 $customer['phoneNumber'] = $context->getCustomer()->getDefaultBillingAddress()->getPhoneNumber();
@@ -183,12 +185,13 @@ class BelcoSubscriber implements EventSubscriberInterface
                 $lastOrder = strtotime($aggregations->get('lastOrder')->getVars()['max']);
             }
 
-            return array(
+            return [
                 'totalSpent' => (float)$aggregations->get('totalSpent')->getVars()['sum'],
                 'lastOrder' => $lastOrder,
-                'orderCount' => (int)$aggregations->get('orderCount')->getVars()['count']
-            );
+                'orderCount' => (int)$aggregations->get('orderCount')->getVars()['count'],
+            ];
         }
+
         return null;
     }
 
@@ -201,28 +204,32 @@ class BelcoSubscriber implements EventSubscriberInterface
     {
         $customer = $this->getCustomer($salesContext);
 
-        $belcoConfig = array(
-            'shopId' => $this->getConfig()['shopId'],
+        $config = $this->getConfig($salesContext->getSalesChannelId());
+
+        $belcoConfig = [
+            'shopId' => $config['shopId'],
             'cart' => $this->getCart($salesContext)
-        );
-//        dd($belcoConfig);
+        ];
+
         if ($customer) {
             $belcoConfig = array_merge($belcoConfig, $customer);
             $order = $this->getOrderData($context, $customer['id']);
+
             if ($order != null) {
                 $belcoConfig = array_merge($belcoConfig, $order);
             }
-            if ($this->getConfig()['apiSecret']) {
-                $belcoConfig['hash'] = hash_hmac('sha256', $customer['id'], $this->getConfig()['apiSecret']);
+
+            if ($config['apiSecret']) {
+                $belcoConfig['hash'] = hash_hmac('sha256', $customer['id'], $config['apiSecret']);
             }
         }
 
         return json_encode($belcoConfig);
     }
 
-    private function getConfig(): ?array
+    private function getConfig(string $salesChannelId): array
     {
-        return $this->systemConfigService->get('BelcoShopware.config');
+        return $this->systemConfigService->get('BelcoShopware.config', $salesChannelId);
     }
 
     /**
@@ -230,25 +237,30 @@ class BelcoSubscriber implements EventSubscriberInterface
      */
     public function onPostDispatch(FooterPageletLoadedEvent $event): void
     {
-        if (!$this->getConfig()['shopId']) {
+        $salesContext = $event->getSalesChannelContext();
+
+        $config = $this->getConfig($salesContext->getSalesChannelId());
+
+        if (!$config['shopId']) {
             return;
         }
-        $salesContext = $event->getSalesChannelContext();
+
         $context = $event->getContext();
         $pagelet = $event->getPagelet();
 
-        $shopId = $this->getConfig()['shopId'];
+        $shopId = $config['shopId'];
 
-        if (!$this->getConfig()['shopId']||!$this->getConfig()['apiSecret']||!$this->getConfig()['domainName']) {
+        if (!$config['shopId']||!$config['apiSecret']||!$config['domainName']) {
             return;
         }
 
         $belcoConfig = $this->getWidgetConfig($salesContext, $context);
 
-        $optionsConfig = array(
+        $optionsConfig = [
             'belcoConfig' => $belcoConfig,
             'shopId' => $shopId
-        );
+        ];
+
         $pagelet->assign($optionsConfig);
     }
 
@@ -261,7 +273,7 @@ class BelcoSubscriber implements EventSubscriberInterface
     {
         return $this->seoUrl->replace(
             $this->seoUrl->generate('frontend.detail.page', ['productId' => $item->getId()]),
-            $this->getConfig()['domainName'],
+            $this->getConfig($context->getSalesChannelId())['domainName'],
             $context);
     }
 }
