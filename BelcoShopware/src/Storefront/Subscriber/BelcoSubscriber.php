@@ -220,11 +220,10 @@ class BelcoSubscriber implements EventSubscriberInterface
         return json_encode($belcoConfig);
     }
 
-    private function getConfig(): array
+    private function getConfig(): ?array
     {
         return $this->systemConfigService->get('BelcoShopware.config');
     }
-
 
     /**
      * @param FooterPageletLoadedEvent $event
