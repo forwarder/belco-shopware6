@@ -229,7 +229,9 @@ class BelcoSubscriber implements EventSubscriberInterface
 
     private function getConfig(string $salesChannelId): array
     {
-        return $this->systemConfigService->get('BelcoShopware.config', $salesChannelId);
+        $config = $this->systemConfigService->get('BelcoShopware.config', $salesChannelId);
+
+        return $config ?? [];
     }
 
     /**
@@ -241,7 +243,23 @@ class BelcoSubscriber implements EventSubscriberInterface
 
         $config = $this->getConfig($salesContext->getSalesChannelId());
 
-        if (!$config['shopId']) {
+        if (!isset($config['shopId'])) {
+            echo 'shopId is not set in the configuration.' . PHP_EOL;
+
+            return;
+        }
+
+
+        if (!isset($config['apiSecret'])) {
+            echo 'apiSecret is not set in the configuration.' . PHP_EOL;
+
+            return;
+        }
+
+
+        if (!isset($config['domainName'])) {
+            echo 'domainName is not set in the configuration.' . PHP_EOL;
+
             return;
         }
 
@@ -249,10 +267,6 @@ class BelcoSubscriber implements EventSubscriberInterface
         $pagelet = $event->getPagelet();
 
         $shopId = $config['shopId'];
-
-        if (!$config['shopId']||!$config['apiSecret']||!$config['domainName']) {
-            return;
-        }
 
         $belcoConfig = $this->getWidgetConfig($salesContext, $context);
 
