@@ -19,6 +19,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class BelcoSubscriber
@@ -46,6 +47,11 @@ class BelcoSubscriber implements EventSubscriberInterface
      */
     private $systemConfigService;
 
+    /**
+     * @var logger
+     */
+    private $logger;
+    
     /**
      * @param ActivateContext $context
      */
@@ -80,17 +86,20 @@ class BelcoSubscriber implements EventSubscriberInterface
      * @param CartService $cartService
      * @param SeoUrlPlaceholderHandlerInterface $ceoUrl
      * @param EntityRepository $entityRepository
+     * @param LoggerInterface $logger
      */
     public function __construct(SystemConfigService $systemConfigService,
                                 CartService $cartService,
                                 SeoUrlPlaceholderHandlerInterface $ceoUrl,
-                                EntityRepository $entityRepository
+                                EntityRepository $entityRepository,
+                                LoggerInterface $logger
     )
     {
         $this->systemConfigService = $systemConfigService;
         $this->cartService = $cartService;
         $this->seoUrl = $ceoUrl;
         $this->repository = $entityRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -244,22 +253,19 @@ class BelcoSubscriber implements EventSubscriberInterface
         $config = $this->getConfig($salesContext->getSalesChannelId());
 
         if (!isset($config['shopId'])) {
-            echo 'shopId is not set in the configuration.' . PHP_EOL;
-
-            return;
+            $missingConfig[] = 'shopId';
         }
-
 
         if (!isset($config['apiSecret'])) {
-            echo 'apiSecret is not set in the configuration.' . PHP_EOL;
-
-            return;
+            $missingConfig[] = 'apiSecret';
         }
 
-
         if (!isset($config['domainName'])) {
-            echo 'domainName is not set in the configuration.' . PHP_EOL;
+            $missingConfig[] = 'domainName';
+        }
 
+        if (!empty($missingConfig)) {
+            $this->logger->error('The following configuration items are missing: ' . implode(', ', $missingConfig));
             return;
         }
 
