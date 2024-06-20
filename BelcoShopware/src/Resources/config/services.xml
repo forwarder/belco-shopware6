@@ -10,6 +10,7 @@
             <argument id="Shopware\Core\Checkout\Cart\SalesChannel\CartService" type="service"/>
             <argument id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface" type="service"/>
             <argument id="order.repository" type="service"/>
+            <argument type="service" id="Psr\Log\LoggerInterface" />
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
