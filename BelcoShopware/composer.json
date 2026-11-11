@@ -1,7 +1,7 @@
 {
   "name": "belco-shopware/belco-shopware",
   "description": "Belco voor Shopware",
-  "version": "v4.0.3",
+  "version": "v4.1.1",
   "type": "shopware-platform-plugin",
   "license": "MIT",
   "authors": [
@@ -13,7 +13,11 @@
     }
   ],
   "require": {
-    "shopware/core": "*"
+    "shopware/core": "*",
+    "shopware/storefront": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.0"
   },
   "extra": {
     "shopware-plugin-class": "BelcoShopware\\BelcoShopware",
@@ -26,5 +30,13 @@
     "psr-4": {
       "BelcoShopware\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BelcoShopware\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
   }
 }
