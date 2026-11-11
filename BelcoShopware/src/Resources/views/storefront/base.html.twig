@@ -3,8 +3,8 @@
 {% block base_body_script %}
     {{ parent() }}
 
-    {% if(page.footer.shopId) %}
-        <script>window.belcoConfig = {{ page.footer.belcoConfig|raw }};</script>
+    {% if belcoConfig is defined and belcoConfig %}
+        <script>window.belcoConfig = {{ belcoConfig|raw }};</script>
     {% else %}
         <script>
             console.log("Belco config is not set, script not injected");
