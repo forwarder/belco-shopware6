@@ -2,7 +2,6 @@
 
 namespace BelcoShopware\Storefront\Subscriber;
 
-use JetBrains\PhpStorm\ArrayShape;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
@@ -16,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Psr\Log\LoggerInterface;
@@ -72,11 +71,10 @@ class BelcoSubscriber implements EventSubscriberInterface
     /**
      * @return string[]
      */
-    #[ArrayShape([FooterPageletLoadedEvent::class => "string"])]
     public static function getSubscribedEvents(): array
     {
         return [
-            FooterPageletLoadedEvent::class => 'onPostDispatch'
+            StorefrontRenderEvent::class => 'onStorefrontRender'
         ];
     }
 
@@ -244,13 +242,18 @@ class BelcoSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param FooterPageletLoadedEvent $event
+     * Add the widget configuration directly to the storefront render context.
+     *
+     * Shopware 6.7 renders header and footer pagelets separately. Data assigned
+     * to the footer pagelet is therefore no longer guaranteed to be available as
+     * page.footer data while the base template is rendered.
      */
-    public function onPostDispatch(FooterPageletLoadedEvent $event): void
+    public function onStorefrontRender(StorefrontRenderEvent $event): void
     {
         $salesContext = $event->getSalesChannelContext();
 
         $config = $this->getConfig($salesContext->getSalesChannelId());
+        $missingConfig = [];
 
         if (!isset($config['shopId'])) {
             $missingConfig[] = 'shopId';
@@ -269,19 +272,10 @@ class BelcoSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $context = $event->getContext();
-        $pagelet = $event->getPagelet();
-
-        $shopId = $config['shopId'];
-
-        $belcoConfig = $this->getWidgetConfig($salesContext, $context);
-
-        $optionsConfig = [
-            'belcoConfig' => $belcoConfig,
-            'shopId' => $shopId
-        ];
-
-        $pagelet->assign($optionsConfig);
+        $event->setParameter(
+            'belcoConfig',
+            $this->getWidgetConfig($salesContext, $event->getContext())
+        );
     }
 
     /**
